@@ -193,6 +193,7 @@ class QuickBooks_IPP
 	
 	protected $_flavor;
 	protected $_baseurl;
+	protected $_sandbox;
 	
 	protected $_authmode;
 	protected $_authuser;
@@ -255,6 +256,9 @@ class QuickBooks_IPP
 
 	public function __construct($dsn = null, $encryption_key = null, $config = array(), $log_level = QUICKBOOKS_LOG_NORMAL)
 	{
+		// Are we in sandbox mode?
+		$this->_sandbox = false;
+
 		// Use a test gateway?
 		$this->_test = false;
 		
@@ -487,6 +491,16 @@ class QuickBooks_IPP
 		}
 		
 		return $this->_flavor;
+	}
+
+	public function sandbox($sandbox = null)
+	{
+		if (!is_null($sandbox))
+		{
+			$this->_sandbox = (bool) $sandbox;
+		}
+
+		return $this->_sandbox;
 	}
 
 	public function baseURL($baseURL = null)
@@ -1019,6 +1033,12 @@ class QuickBooks_IPP
 			$this->baseURL(QuickBooks_IPP_IDS::URL_V3_SANDBOX);
 		} else {
 			$this->baseURL(QuickBooks_IPP_IDS::URL_V3);
+		}
+
+		// If we're in sandbox mode, use the sandbox URL instead
+		if ($this->sandbox())
+		{
+			$this->baseURL(QuickBooks_IPP_IDS::URL_V3_SANDBOX);
 		}
 
 		$post = false;

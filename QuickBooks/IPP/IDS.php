@@ -60,7 +60,7 @@ class QuickBooks_IPP_IDS
 	const URL_V3 = 'https://quickbooks.api.intuit.com/v3';
 
 	const URL_V3_SANDBOX = 'https://sandbox-quickbooks.api.intuit.com/v3';
-
+	
 	/**
 	 * Default BASEURL for QuickBooks Desktop (QuickBooks Online requires you to fetch a specific BASEURL)
 	 */
