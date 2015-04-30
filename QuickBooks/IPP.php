@@ -198,8 +198,6 @@ class QuickBooks_IPP
 	protected $_authmode;
 	protected $_authuser;
 	protected $_authcred;
-
-	protected $_sandbox = false;
 	
 	/**
 	 * Auth signing method (if applicable)
@@ -986,22 +984,6 @@ class QuickBooks_IPP
 	}
 
 	/**
-	 * Get or set the sandbox mode. If not set, will default false for production
-	 *
-	 * @param bool $sandbox		Set as true for sandbox mode or false for production
-	 * @return bool				Returns true if in sandbox mode. False for production mode
-	 */
-	public function sandbox($sandbox = null)
-	{
-		if (isset($sandbox))
-		{
-			$this->_sandbox = $sandbox;
-		}
-
-		return $this->_sandbox;
-	}
-	
-	/**
 	 * Make an IDS request (Intuit Data Services) to the remote server
 	 *
 	 * @param QuickBooks_IPP_Context $Context		The context (token and ticket) to use
@@ -1029,11 +1011,7 @@ class QuickBooks_IPP
 	protected function _IDS_v3($Context, $realm, $resource, $optype, $xml_or_query, $ID)
 	{
 		// All v3 URLs have the same baseURL
-		if ($this->sandbox()) {
-			$this->baseURL(QuickBooks_IPP_IDS::URL_V3_SANDBOX);
-		} else {
-			$this->baseURL(QuickBooks_IPP_IDS::URL_V3);
-		}
+		$this->baseURL(QuickBooks_IPP_IDS::URL_V3);
 
 		// If we're in sandbox mode, use the sandbox URL instead
 		if ($this->sandbox())
