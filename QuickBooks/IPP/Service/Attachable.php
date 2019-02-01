@@ -86,4 +86,9 @@ class QuickBooks_IPP_Service_Attachable extends QuickBooks_IPP_Service
 		return $this->_delete($Context, $realmID, 'Attachable', $IDType);
 	}
 
+	public function download($Context, $realmID, $ID)
+	{
+		return parent::_download($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DOWNLOAD, $ID);
+	}
+
 }
