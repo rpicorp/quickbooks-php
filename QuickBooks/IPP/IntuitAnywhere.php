@@ -285,7 +285,7 @@ class QuickBooks_IPP_IntuitAnywhere
 	{
 		$lifetime = 15552000;
 
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) and
+		if ($arr = $this->_driver->oauthLoadV1($this->_key, $app_username, $app_tenant) and
 			strlen($arr['oauth_access_token']) > 0 and
 			strlen($arr['oauth_access_token_secret']) > 0)
 		{
@@ -322,7 +322,7 @@ class QuickBooks_IPP_IntuitAnywhere
 	 */
 	public function reconnect($app_username, $app_tenant)
 	{
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) and
+		if ($arr = $this->_driver->oauthLoadV1($this->_key, $app_username, $app_tenant) and
 			strlen($arr['oauth_access_token']) > 0 and
 			strlen($arr['oauth_access_token_secret']) > 0)
 		{
@@ -365,7 +365,7 @@ class QuickBooks_IPP_IntuitAnywhere
 
 	public function disconnect($app_username, $app_tenant, $force = false)
 	{
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) and
+		if ($arr = $this->_driver->oauthLoadV1($this->_key, $app_username, $app_tenant) and
 			strlen($arr['oauth_access_token']) > 0 and
 			strlen($arr['oauth_access_token_secret']) > 0)
 		{
