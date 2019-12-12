@@ -862,7 +862,7 @@ class QuickBooks_IPP
 		$IPP = $Context->IPP();
 
 		// Do any renewals we need to do first
-		$this->_handleRenewal();
+		$this->handleRenewal();
 
 		switch ($IPP->version())
 		{
@@ -875,14 +875,14 @@ class QuickBooks_IPP
 	/**
 	 * Do we need to renew the OAuth access token? If so, renew it
 	 */
-	protected function _handleRenewal()
+	public function handleRenewal()
 	{
 		static $attempted_renew = false;
 
 		if (!$attempted_renew and
 			is_object($this->_driver) and
 			$this->_authmode == QuickBooks_IPP::AUTHMODE_OAUTHV2 and
-			strtotime($this->_authcred['oauth_access_expiry']) + 60 < time())
+			strtotime($this->_authcred['oauth_access_expiry']) - 60 < time())
 		{
 			$attempted_renew = true;
 
