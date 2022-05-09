@@ -249,7 +249,8 @@ class QuickBooks_HTTP
 		{
 			return $this->_body;
 		}
-		else if (count($this->_post))
+		else if (is_array($this->_post) and
+			count($this->_post))
 		{
 			return http_build_query($this->_post);
 		}
@@ -493,7 +494,9 @@ class QuickBooks_HTTP
 		}
 
 		$query = '';
-		if (count($this->_get))
+
+		if (is_array($this->_get) and
+			count($this->_get))
 		{
 			$query = '?' . http_build_query($this->_get);
 		}
@@ -600,26 +603,15 @@ class QuickBooks_HTTP
 				return $len;
 			}
 		);
-		$this->_last_responseheaders = $response_headers;
 
 		$response = curl_exec($ch);
-
-		/*
-		print("\n\n\n" . '---------------------' . "\n");
-		print('[[request ' . $request . ']]' . "\n\n\n");
-		print('[[resonse ' . $response . ']]' . "\n\n\n\n\n");
-
-		print_r($params);
-		print_r(curl_getinfo($ch));
-		print_r($headers);
-		print("\n" . '---------------------' . "\n\n\n\n");
-		*/
+		$this->_last_responseheaders = $response_headers;
 
 		$this->_last_response = $response;
 		$this->_log('HTTP response: ' . substr($response, 0, 500) . '...', QUICKBOOKS_LOG_VERBOSE);
 
 		$this->_last_info = curl_getinfo($ch);
-
+		
 		if (curl_errno($ch))
 		{
 			$errnum = curl_errno($ch);

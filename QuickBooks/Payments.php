@@ -164,8 +164,14 @@ class Quickbooks_Payments
 
 		$data = json_decode($resp, true);
 
-		//print_r($data);
-		//exit;
+		if (empty($data))
+		{
+			// If we didn't get anything back at all, it could be an HTTP
+			// time-out which we will report as failure
+
+			$this->_setError(self::ERROR_HTTP, 'Communication error while processing request.');
+			return false;
+		}
 
 		if ($this->_handleError($data))
 		{
@@ -708,7 +714,7 @@ class Quickbooks_Payments
 	 */
 	protected function _http($Context, $url_path, $raw_body = null, $operation = null)
 	{
-		if($operation !== null)
+		if ($operation !== null)
 		{
 			$method = $operation;
 		}
@@ -727,16 +733,7 @@ class Quickbooks_Payments
 		$authmode = $Context->authmode();
 
 		$auth_str = '';
-		if ($authmode == QuickBooks_IPP::AUTHMODE_OAUTHV1)
-		{
-			$params = array();
-
-			$OAuth = new QuickBooks_IPP_OAuthv1($this->_oauth_consumer_key, $this->_oauth_consumer_secret);
-			$signed = $OAuth->sign($method, $url, $authcreds['oauth_access_token'], $authcreds['oauth_access_token_secret'], $params);
-
-			$auth_str = $signed[3];
-		}
-		else if ($authmode == QuickBooks_IPP::AUTHMODE_OAUTHV2)
+		if ($authmode == QuickBooks_IPP::AUTHMODE_OAUTHV2)
 		{
 			// Do we need to renew OAuth tokens?
 			$Context->IPP()->handleRenewal();
@@ -781,14 +778,46 @@ class Quickbooks_Payments
 			$return = null;  // ERROR
 		}
 
+		$info = $HTTP->lastInfo();
+		$this->_last_httpinfo = $info;
+
+		if ($info['http_code'] == 401)
+		{
+			// Auth tokens expired; automatically refresh and retry
+			$Context->IPP()->forceRenewal();
+			$authcreds = $Context->IPP()->authcreds();
+
+			if (!empty($authcreds['oauth_access_token']))
+			{
+				// Set the new header
+				$headers['Authorization'] = 'Bearer ' . $authcreds['oauth_access_token'];
+				$headers['Request-Id'] = QuickBooks_Utilities::GUID();                    // Generate a new unique Request-Id
+				$HTTP->setHeaders($headers);
+
+				// Retry the request
+				if ($method == 'POST')
+				{
+					$return = $HTTP->POST();
+				}
+				else if ($method == 'GET')
+				{
+					$return = $HTTP->GET();
+				}
+				else if ($method == 'DELETE')
+				{
+					$return = $HTTP->DELETE();
+				}
+
+				$info = $HTTP->lastInfo();
+				$this->_last_httpinfo = $info;
+			}
+		}
+
 		$this->_last_request = $HTTP->lastRequest();
 		$this->_last_response = $HTTP->lastResponse();
 
 		//
 		$this->log($HTTP->getLog(), QUICKBOOKS_LOG_DEBUG);
-
-		$info = $HTTP->lastInfo();
-		$this->_last_httpinfo = $info;
 
 		$this->_last_intuittid = '';
 		$response_headers = $HTTP->lastResponseHeaders();
@@ -796,7 +825,7 @@ class Quickbooks_Payments
 		{
 			$this->_last_intuittid = $response_headers['intuit_tid'];
 		}
-		
+
 		$errnum = $HTTP->errorNumber();
 		$errmsg = $HTTP->errorMessage();
 

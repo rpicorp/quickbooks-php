@@ -483,58 +483,7 @@ class QuickBooks_IPP
 
 	public function getBaseURL($Context, $realmID)
 	{
-		/*
-		$url = 'https://qbo.intuit.com/qbo1/rest/user/v2/' . $realmID;
-		$action = QuickBooks_IPP::API_GETBASEURL;
-		$xml = null;
-
-		$post = false;
-		return $this->_IPP($Context, $url, $action, $xml, $post);
-		*/
-
 		return QuickBooks_IPP_IDS::URL_V3;
-	}
-
-	public function getIsRealmQBO($Context)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_GETISREALMQBO;
-
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-   				<apptoken>' . $Context->token() . '</apptoken>
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function assertFederatedIdentity($Context, $provider, $target_url, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/main';
-		$action = QuickBooks_IPP::API_ASSERTFEDERATEDIDENTITY;
-
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
-				<serviceProviderID>' . htmlspecialchars($provider) . '</serviceProviderID>
-				<targetURL>' . htmlspecialchars($target_url, ENT_QUOTES) . '</targetURL>
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function renameApp($Context, $name)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_RENAMEAPP;
-
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-   				<apptoken>' . $Context->token() . '</apptoken>
-   				<newappname>' . htmlspecialchars($name) . '</newappname>
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
 	}
 
 	public function getIDSRealm($Context)
@@ -565,71 +514,6 @@ class QuickBooks_IPP
 
 		// @todo Parse and return an object?
 		return $response;
-	}
-
-	/*
-	public function getEntitlementValues($Context)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_GETENTITLEMENTVALUES;
-
-		$xml = '<qdbapi>
-			<ticket>' . $Context->ticket() . '</ticket>
-			<apptoken>' . $Context->token() . '</apptoken>
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function getEntitlementValuesAndUserRole($Context)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_GETENTITLEMENTVALUESANDUSERROLE;
-
-		$xml = '<qdbapi>
-			<ticket>' . $Context->ticket() . '</ticket>
-			<apptoken>' . $Context->token() . '</apptoken>
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-	*/
-
-	public function provisionUser($Context, $email, $fname, $lname, $roleid = null, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = 'API_ProvisionUser';
-
-		$xml = '<qdbapi>
-					<ticket>' . $Context->ticket() . '</ticket>
-					<apptoken>' . $Context->token() . '</apptoken>';
-
-		if ($roleid)
-		{
-			$xml .= '<roleid>' . $roleid . '</roleid>';
-		}
-
-		$xml .= '
-				<email>' . $email . '</email>
-				<fname>' . $fname . '</fname>
-				<lname>' . $lname . '</lname>';
-
-		if ($udata)
-		{
-			$xml .= '<udata>' . $udata . '</udata>';
-		}
-
-		$xml .= '
-			</qdbapi>';
-
-		$response = $this->_request($Context, QuickBooks_IPP::REQUEST_IPP, $url, $action, $xml);
-
-		if ($this->_hasErrors($response))
-		{
-			return false;
-		}
-
-		return true;
 	}
 
 	public function getUserRoles($Context, $userid, $udata = null)
@@ -671,148 +555,6 @@ class QuickBooks_IPP
 		}
 
 		$xml .= '
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function sendInvitation($Context, $userid, $usertext, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = 'API_SendInvitation';
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
-				<userid>' . htmlspecialchars($userid) . '</userid>
-				<usertext>' . htmlspecialchars($usertext) . '</usertext>';
-
-		if ($udata)
-		{
-			$xml .= '<udata>' . $udata . '</udata>';
-		}
-
-		$xml .= '
-			</qdbapi>';
-
-		$response = $this->_request($Context, QuickBooks_IPP::REQUEST_IPP, $url, $action, $xml);
-
-		if ($this->_hasErrors($response))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	public function getDBInfo($Context, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_GETDBINFO;
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>';
-
-		if ($udata)
-		{
-			$xml .= '<udata>' . $udata . '</udata>';
-		}
-
-		$xml .= '
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function setDBVar($Context, $varname, $value, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_SETDBVAR;
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
-				<varname>' . QuickBooks_XML::encode($varname) . '</varname>
-				<value>' . QuickBooks_XML::encode($value) . '</value>';
-
-		if ($udata)
-		{
-			$xml .= '<udata>' . $udata . '</udata>';
-		}
-
-		$xml .= '
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function getDBVar($Context, $varname, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_GETDBVAR;
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
-				<varname>' . QuickBooks_XML::encode($varname) . '</varname>';
-
-		if ($udata)
-		{
-			$xml .= '<udata>' . $udata . '</udata>';
-		}
-
-		$xml .= '
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function createTable($Context, $tname, $pnoun, $udata = null)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = 'API_CreateTable';
-		$xml = '<qdbapi>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
-				<tname>' . $tname . '</tname>
-				<pnoun>' . $pnoun . '</pnoun>';
-
-		if ($udata)
-		{
-			$xml .= '<udata>' . $udata . '</udata>';
-		}
-
-		$xml .= '
-			</qdbapi>';
-
-		$response = $this->_request($Context, QuickBooks_IPP::REQUEST_IPP, $url, $action, $xml);
-
-		if ($this->_hasErrors($response))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	public function attachIDSRealm($Context, $realm)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_ATTACHIDSREALM;
-		$xml = '<qdbapi>
-				<realm>' . $realm . '</realm>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
-			</qdbapi>';
-
-		return $this->_IPP($Context, $url, $action, $xml);
-	}
-
-	public function detachIDSRealm($Context, $realm)
-	{
-		$url = 'https://workplace.intuit.com/db/' . $this->_dbid;
-		$action = QuickBooks_IPP::API_DETACHIDSREALM;
-		$xml = '<qdbapi>
-				<realm>' . $realm . '</realm>
-				<ticket>' . $Context->ticket() . '</ticket>
-				<apptoken>' . $Context->token() . '</apptoken>
 			</qdbapi>';
 
 		return $this->_IPP($Context, $url, $action, $xml);
@@ -874,20 +616,90 @@ class QuickBooks_IPP
 
 	/**
 	 * Do we need to renew the OAuth access token? If so, renew it
+	 *
+	 * @return bool
 	 */
 	public function handleRenewal()
 	{
-		static $attempted_renew = false;
+		for ($i = 0; $i < 3; $i++)
+		{
+			$renewed = $this->_handleRenewal();
 
-		if (!$attempted_renew and
+			if ($renewed)
+			{
+				break;
+			}
+		}
+
+		return $renewed;
+	}
+
+	/**
+	 * Force renewal of an OAuth access token, even if we don't think we need to
+	 *
+	 * @return bool
+	 */
+	public function forceRenewal()
+	{
+		for ($i = 0; $i < 3; $i++)
+		{
+			$renewed = $this->_handleRenewal(true);
+
+			if ($renewed)
+			{
+				break;
+			}
+		}
+
+		return $renewed;
+	}
+
+	/**
+	 * Attempt to renew the OAuth v2 tokens... if a renewal is required
+	 *
+	 * @return bool
+	 */
+	protected function _handleRenewal($force_renewal = false)
+	{
+		$this->_log('_handleRenewal(' . var_export($force_renewal, true) . ')', QUICKBOOKS_LOG_DEBUG);
+
+		static $was_renewed_during_this_session = false;
+		static $renewal_attempts = 0;
+
+		$this->_log('  Was renewed already? ' . var_export($was_renewed_during_this_session, true), QUICKBOOKS_LOG_DEBUG);
+		$this->_log('  Renewal attemps so far: ' . var_export($renewal_attempts, true), QUICKBOOKS_LOG_DEBUG);
+
+		$renewal_attempts++;
+
+		$needs_renewal = false;
+
+		if (is_object($this->_driver) and
+			$this->_authmode == QuickBooks_IPP::AUTHMODE_OAUTHV2 and
+			$force_renewal)
+		{
+			$this->_log('Forced renewal, so renewal is needed!', QUICKBOOKS_LOG_DEBUG);
+			$needs_renewal = true;
+		}
+		else if (!$was_renewed_during_this_session and
 			is_object($this->_driver) and
 			$this->_authmode == QuickBooks_IPP::AUTHMODE_OAUTHV2 and
 			strtotime($this->_authcred['oauth_access_expiry']) - 60 < time())
 		{
-			$attempted_renew = true;
+			$this->_log('Expired token, so renewal is needed!', QUICKBOOKS_LOG_DEBUG);
+			$needs_renewal = true;
+		}
 
-			if ($discover = QuickBooks_IPP_IntuitAnywhere::discover($this->_sandbox))
+		$this->_log('  Do we need to renew? ' . var_export($needs_renewal, true), QUICKBOOKS_LOG_DEBUG);
+
+		if ($needs_renewal)
+		{
+			$this->_log('Attempting discover...', QUICKBOOKS_LOG_DEBUG);
+
+			if ($discover = QuickBooks_IPP_IntuitAnywhere::discover($this->_sandbox) and
+				!empty($this->_authcred['oauth_client_id']))
 			{
+				$this->_log('Attempting renewal...', QUICKBOOKS_LOG_DEBUG);
+
 				$ch = curl_init($discover['token_endpoint']);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);   // Do not follow; security risk here
@@ -904,6 +716,8 @@ class QuickBooks_IPP
 
 				if ($info['http_code'] == 200)
 				{
+					$was_renewed_during_this_session = true;
+
 					$json = json_decode($retr, true);
 
 					$this->_driver->oauthAccessRefreshV2(
@@ -915,13 +729,20 @@ class QuickBooks_IPP
 						date('Y-m-d H:i:s', time() + (int) $json['x_refresh_token_expires_in']));
 
 					// Replace our auth creds with the new ones
-					$this->_authcred = $this->_driver->oauthLoadV2($this->_key, $this->_authcred['app_tenant']);
+					$this->_authcred = array_merge($this->_authcred, $this->_driver->oauthLoadV2($this->_key, $this->_authcred['app_tenant']));
+
+					$this->_log('  Renewal success! New token: ' . $json['access_token'], QUICKBOOKS_LOG_DEBUG);
 
 					// Successfully renewed!
 					return true;
 				}
+				else
+				{
+					$this->_log('  Renewal failed: ' . $info['http_code'] . ': ' . $retr, QUICKBOOKS_LOG_DEBUG);
+				}
 			}
 
+			$this->_log('  Discover failed!', QUICKBOOKS_LOG_DEBUG);
 			return false;
 		}
 
@@ -1003,9 +824,6 @@ class QuickBooks_IPP
 		}
 
 		$response = $this->_request($Context, QuickBooks_IPP::REQUEST_IDS, $url, $optype, $xml, $post);
-
-		// print('URL is [' . $url . ']');
-		//die('RESPONSE IS [' . $response . ']');
 
 		// Check for generic IPP errors and HTTP errors
 		if ($this->_hasErrors($response))
@@ -1228,8 +1046,7 @@ class QuickBooks_IPP
 	 */
 	protected function _request($Context, $type, $url, $action, $data, $post = true)
 	{
-		$headers = array(
-			);
+		$headers = array();
 
 		if ($this->_isUpload($url))
 		{
@@ -1254,8 +1071,7 @@ class QuickBooks_IPP
 			{
 				$headers['Authorization'] = 'Bearer ' . $this->_authcred['oauth_access_token'];
 			}
-		}
-		else if ($this->_authmode == QuickBooks_IPP::AUTHMODE_OAUTHV1)
+		} else if ($this->_authmode == QuickBooks_IPP::AUTHMODE_OAUTHV1)
 		{
 			// If we have credentials, sign the request
 			if ($this->_authcred['oauth_access_token'] and
@@ -1312,8 +1128,7 @@ class QuickBooks_IPP
 					{
 						$data = http_build_query($signdata);
 					}
-				}
-				else
+				} else
 				{
 					;
 				}
@@ -1343,6 +1158,48 @@ class QuickBooks_IPP
 		else
 		{
 			$return = $HTTP->GET();
+		}
+
+		// If we got back a 401, indicating an expired token, we can renew and retry!
+		$info = $HTTP->lastInfo();
+		$this->_log('HTTP response code: ' . $info['http_code'], QUICKBOOKS_LOG_DEBUG);
+
+		if ($info['http_code'] == QuickBooks_HTTP::HTTP_401)
+		{
+			$this->_log('Caught HTTP 401 on response on token ' . $this->_authcred['oauth_access_token'] . ', will attempt renewal: ' . $return, QUICKBOOKS_LOG_DEBUG);
+		}
+
+		if ($info['http_code'] == QuickBooks_HTTP::HTTP_401 and
+			( false !== stripos($return, 'expired') or false !== stripos($return, 'AuthenticationFailed') ) and         // Expired OAuth token
+			$this->_authmode == QuickBooks_IPP::AUTHMODE_OAUTHV2 and
+			$this->_authcred['oauth_access_token'])
+		{
+			$this->_log('Forcing renewal...', QUICKBOOKS_LOG_DEBUG);
+
+			// Force renewal of the token _right now_
+			$renewed = $this->forceRenewal();
+
+			$this->_log('Attempted renewal...: ' . var_export($renewed, true), QUICKBOOKS_LOG_DEBUG);
+
+			if ($renewed)
+			{
+				$this->_log('Renewal success! Setting new token and re-attempting: ' . $this->_authcred['oauth_access_token'], QUICKBOOKS_LOG_DEBUG);
+
+				// Set the new token
+				$headers['Authorization'] = 'Bearer ' . $this->_authcred['oauth_access_token'];
+
+				$HTTP->setHeaders($headers);
+
+				// Retry the request
+				if ($post)
+				{
+					$return = $HTTP->POST();
+				}
+				else
+				{
+					$return = $HTTP->GET();
+				}
+			}
 		}
 
 		$this->_setLastRequestResponse($HTTP->lastRequest(), $HTTP->lastResponse());
